@@ -122,6 +122,18 @@ class VsCodeInstaller implements IdeInstaller {
       vsixFiles = glob.sync(devPath);
     }
     if (vsixFiles.length === 0) {
+      // When the CLI is packaged as a single binary (e.g. via Bun --compile),
+      // the module path may not map to a real on-disk folder. As a fallback,
+      // also check next to the executable path so we can ship the VSIX beside
+      // the binary in release artifacts.
+      const execDir = path.dirname(process.execPath);
+      const execPathPattern = path.join(execDir, '*.vsix');
+      const execMatches = glob.sync(execPathPattern);
+      if (execMatches.length > 0) {
+        vsixFiles = execMatches;
+      }
+    }
+    if (vsixFiles.length === 0) {
       return {
         success: false,
         message:

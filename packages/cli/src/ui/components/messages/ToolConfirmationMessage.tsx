@@ -5,7 +5,8 @@
  */
 
 import React from 'react';
-import { Box, Text, useInput } from 'ink';
+import { Box, Text } from 'ink';
+import { useKeypress } from '../../hooks/useKeypress.js';
 import { DiffRenderer } from './DiffRenderer.js';
 import { Colors } from '../../colors.js';
 import {
@@ -40,12 +41,12 @@ export const ToolConfirmationMessage: React.FC<
   const { onConfirm } = confirmationDetails;
   const childWidth = terminalWidth - 2; // 2 for padding
 
-  useInput((_, key) => {
+  useKeypress((key) => {
     if (!isFocused) return;
-    if (key.escape) {
+    if (key.name === 'escape') {
       onConfirm(ToolConfirmationOutcome.Cancel);
     }
-  });
+  }, { isActive: true });
 
   const handleSelect = (item: ToolConfirmationOutcome) => onConfirm(item);
 

@@ -1,59 +1,30 @@
-# Makefile for gemini-cli
+## Simple Makefile for Bun binary releases
 
-.PHONY: help install build build-sandbox build-all test lint format preflight clean start debug release run-npx create-alias
+.PHONY: release clean
 
-help:
-	@echo "Makefile for gemini-cli"
-	@echo ""
-	@echo "Usage:"
-	@echo "  make install          - Install npm dependencies"
-	@echo "  make build            - Build the main project"
-	@echo "  make build-all        - Build the main project and sandbox"
-	@echo "  make test             - Run the test suite"
-	@echo "  make lint             - Lint the code"
-	@echo "  make format           - Format the code"
-	@echo "  make preflight        - Run formatting, linting, and tests"
-	@echo "  make clean            - Remove generated files"
-	@echo "  make start            - Start the Gemini CLI"
-	@echo "  make debug            - Start the Gemini CLI in debug mode"
-	@echo ""
-	@echo "  make run-npx          - Run the CLI using npx (for testing the published package)"
-	@echo "  make create-alias     - Create a 'gemini' alias for your shell"
+# Ensure Bun is available on PATH
+export PATH := $(HOME)/.bun/bin:$(PATH)
+BUN_BIN := $(HOME)/.bun/bin/bun
+BUN_VERSION := 1.2.19
 
-install:
-	npm install
-
-build:
-	npm run build
-
-
-build-all:
-	npm run build:all
-
-test:
-	npm run test
-
-lint:
-	npm run lint
-
-format:
-	npm run format
-
-preflight:
-	npm run preflight
+release:
+	@echo "==> Ensuring Bun ($(BUN_VERSION)) is installed"
+	@if [ ! -x "$(BUN_BIN)" ]; then \
+		curl -fsSL https://bun.sh/install | bash -s -- bun-v$(BUN_VERSION); \
+	fi
+	@echo "==> Bun version: $$(bun --version)"
+	@echo "==> Ensuring npm dependencies"
+	@if [ ! -d node_modules ]; then \
+		npm ci; \
+	fi
+	@echo "==> Building cross-platform binaries via Bun"
+	@npm run clean
+	@npm run build
+	@npm run bundle
+	@npm run release:bun
 
 clean:
-	npm run clean
-
-start:
-	npm run start
-
-debug:
-	npm run debug
-
-
-run-npx:
-	npx https://github.com/google-gemini/gemini-cli
-
-create-alias:
-	scripts/create_alias.sh
+	@echo "==> Cleaning build artifacts"
+	@node scripts/clean.js || true
+	@rm -rf release || true
+	@echo "Done."

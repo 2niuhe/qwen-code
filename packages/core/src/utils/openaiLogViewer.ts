@@ -146,7 +146,7 @@ function getRequestType(request: unknown): string {
 }
 
 // CLI interface when script is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (false && import.meta.url === `file://${process.argv[1]}`) {
   async function main() {
     const args = process.argv.slice(2);
     const command = args[0]?.toLowerCase();
@@ -193,7 +193,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
 
-  main().catch(console.error);
-}
+    main().catch(console.error);
+  }
 
 export default OpenAILogViewer;

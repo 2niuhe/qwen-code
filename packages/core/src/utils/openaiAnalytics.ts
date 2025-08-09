@@ -339,7 +339,7 @@ function getErrorTypeFromLog(logData: unknown): string {
 }
 
 // CLI interface when script is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (false && import.meta.url === `file://${process.argv[1]}`) {
   async function main() {
     const args = process.argv.slice(2);
     const days = args[0] ? parseInt(args[0], 10) : 7;
